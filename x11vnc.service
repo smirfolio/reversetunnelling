@@ -1,0 +1,13 @@
+[Unit]
+Description=Start x11vnc at startup.
+Requires=display-manager.service
+After=display-manager.service network.target syslog.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/x11vnc -display :0 -forever -bg -rfbport 5901 -xkb -noxrecord -noxfixes -nox$
+ExecStop=/user/bin/killall x11vnc
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
