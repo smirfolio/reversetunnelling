@@ -1,0 +1,11 @@
+[Unit]
+Description=Start python tunnelling  at startup.
+
+[Service]
+ExecStart=/usr/bin/python /home/<user>/reversetunnelling/telegram_bot.py
+Restart=on-failure
+User=samir
+WorkingDirectory=/home/<user>/reversetunnelling
+
+[Install]
+WantedBy=multi-user.target

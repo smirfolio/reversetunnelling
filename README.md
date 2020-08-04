@@ -9,19 +9,23 @@ Basically it consists of using reverse tunnelling  technique and open a ssh conn
 computer and redirect some useful protocol throw this ssh connection 
 
 ### Prerequisites
-- Ubuntu > 18 in the 2 sides
+- [XUbuntu](https://xubuntu.org/) > 18 in the 2 sides
+- Download this repository in /home/<user>/ folder
 - Your Home router must be accessible and should have port-forwarding capabilities
-- Optionally have a no-ip account if your router can deal with it, a ngrok account can do the job to have a fix dress for your home computer
-
-### Steps
+- Optionally have a no-ip account if your router can deal with it, a ngrok account can do the job to have a fix address for your home computer
+- For Methode 2 by using a Telegram bot, install Python and these libraries (This means that you must have a [Telegram](https://telegram.org/) account):
+    - subprocess
+    - configparser
+    - requests
+    - teleport
 #### In the home computer side
 1. Configure the port forwarding in the home router [Here an exemple](https://www.cyberpratibha.com/blog/ssh-port-forwarding-in-router/)
 2. (Optional) configure a no-ip account in your router if its available
-3. (Optional) you can ignore steps 11 and 12 by using [ngrok](https://ngrok.com/) account directly in your home computers
+3. (Optional) you can ignore the 1 and 2 steps  by only using [ngrok](https://ngrok.com/) account directly in your home computers
+4. Use your no-ip or ngrock dns as ssh server (Please see the config.ini file)
 4. Install a nvcClient [RealVnc viewr](https://www.realvnc.com/en/connect/download/viewer/)
 
-
-#### In the office computer side
+### Methode 1 Using Cron Steps  In the office computer side
 1. Install x11vnc vnc server.
 2. set the x11vnc password `x11vnc -storepasswd`.
 3. stop the x11vnc `ps aux | grep '[u]sr.*bin/x11vnc' | awk {'print $2'} | xargs kill -9`.
@@ -32,14 +36,40 @@ computer and redirect some useful protocol throw this ssh connection
 8. Install the xscreensaver : `sudo apt-get install xscreensaver`.
 9. Make it default lock screen [here a tutorial](https://www.linuxbabe.com/ubuntu/install-autostart-xscreensaver-ubuntu-18-04-19-04).
 10. Make it  possible to ssh your home computer without a password  [here a tutorial](https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id/).
-11. Copy the *.sh files to ~/.ssh `cp *.sh ~/.ssh/`.
-12. Edit the ssh_tunelling.sh in your convenience.
-13. configure the cron jobs :
+11. Edit the tunnelling.sh in your convenience by replacing expected parameters (SERVER=$1, USER=$2, ... etc) with correct value.
+12. configure the cron jobs :
 
-    `*/5 8-18 * * 1-6 ~/.ssh/ssh_tunnel.sh >> /var/log/tunelingssh.log 2>&1
-    */5 8-18 * * 1-6 ~/.ssh/ssh_localProxy.sh >> /var/log/localproxyssh.log 2>&1`
+    `*/5 8-18 * * 1-6 ~/reversetunnelling/tunnelling.sh >> /var/log/tunelingssh.log 2>&1
+    */5 8-18 * * 1-6 ~/reversetunnelling/localProxy.sh >> /var/log/localproxyssh.log 2>&1`
     
     Here we execute the .sh scripts every 5 min between 8AM and 6pm from Monday to Saturday.
+
+### Methode 2 using Telegram Bot in the office computer side
+#### Motivation
+In some circumstance as your office desktop cron try to establish a ssh connection every 5 min, your organization firewall, can detected this as non legit action
+and your sysAdmin can decide to block this connection by blacklisting your office desktop ip or by disallowing used port (True story :grin: ) .
+
+A more effective solution is to lunch the tunnelling on demand, inspired by this [tutorial](https://www.instructables.com/id/Set-up-Telegram-Bot-on-Raspberry-Pi/).
+In this Method, user can provide a specific port to use
+TODO: 
+- [x] User can provide a specific port   
+- [ ] User can provide a specific server    
+- [ ] User can provide a specific user
+- [ ] any other useful options 
+        
+#### Steps
+1. Perform the 1 to 10 steps from Method 1
+2. Flow this tutorial to create a [Telegram Bot](https://core.telegram.org/bots#6-botfather)
+3. Edit the config.ini cordially, please pay attention to the 'permitteduser_id' that is the unique Telegram User that can interact with the Bot
+4. Create /lib/systemd/system/tunnelling.service and paste the tunnelling.service file content.
+5. Edit the /lib/systemd/system/tunnelling.service in your convenience by replacing the <user> with your home user folder
+6. `sudo systemctl daemon-reload`.
+7. `sudo service tunnelling start`.
+8. Interact with the Bot from you Telegram messaging app by:
+    - Start ssh tunnelling : `Ssh run`
+    - Start ssh tunnelling : `Ssh run port:200` (You can specify the ssh port to use)
+    - Stop ssh tunnelling : `Ssh stop`
+    - Any other message interaction will be responded by the Bot with a random quote
 
 ### Usage
 The .sh scripts should be already launched before trying to connect back to the office computer
