@@ -1,14 +1,14 @@
 #!/bin/bash
 
-## The Home Computer information See the README.md
-SERVER=#<Domain Name / fixe ip address>#
-USER=#<User in the Home computer>#
-PORT=#<Used port>#
-TIMEOUT=#<A time out in second>#
+## The Home Computer information See the README.md and the config.ini
+SERVER=$1
+USER=$2
+PORT=$3
+TIMEOUT=$4
 
 ## Accept these traffic from $SERVER =>  5900: Vnc client income request, 6666: Socks proxy http request, 4022: ssh income request
 createShhTunnel() {
-    ssh -fN -R5901:localhost:5901 -R6666:localhost:54321 -R4022:localhost:22 ${USER}@${SERVER} -p ${PORT} -o ConnectTimeout=15
+    ssh -fN -R5901:localhost:5901 -R6666:localhost:54321 -R4022:localhost:22 ${USER}@${SERVER} -p ${PORT} -o ConnectTimeout=${TIMEOUT}
     if [[ $? -eq 0 ]]; then
         echo ssh Tunnel to host  created successfully
     else
