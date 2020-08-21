@@ -1,0 +1,12 @@
+[Unit]
+Description=Start python tunnelling  at startup.
+
+[Service]
+ExecStart=/usr/bin/python /home/<user>/reversetunnelling/telegram_bot.py
+ExecStop=kill -9 $(ps aux | grep '[p]ython.*telegram_bot.py' | awk {'print $2'})
+Restart=on-failure
+User=samir
+WorkingDirectory=/home/<user>/reversetunnelling
+
+[Install]
+WantedBy=multi-user.target
