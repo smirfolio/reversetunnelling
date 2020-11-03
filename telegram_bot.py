@@ -59,11 +59,11 @@ def action(msg):
                     if 'server:' in commandMessage:
                         server = getParameter("server", commandMessage)
 
-            ssh_command = "./tunnelling.sh " + server + " " + user + " " + port + " " + timeout + " && ./localProxy.sh"
-            message = 'Start tunnelling on server ' + server
+                ssh_command = "./tunnelling.sh " + server + " " + user + " " + port + " " + timeout + " && ./localProxy.sh"
+                message = 'Start tunnelling on server ' + server
 
-            # Run the tunneling script
-            subprocess.call(ssh_command, shell=True)
+                # Run the tunneling script
+                subprocess.call(ssh_command, shell=True)
 
             if 'stop' in commandMessage:
                 ssh_command = "./stop_tunnelling.sh " + server
