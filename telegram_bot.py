@@ -22,10 +22,15 @@ timeout = config['DEFAULT']['timeout']
 botkey = config['DEFAULT']['botkey']
 permitteduser_id = str(config['DEFAULT']['permitteduser_id'])
 
+def getParameter(param, command):
+    regex = r"(" + param + ":)([^,]+)"
+    matches = re.search(regex, command, re.MULTILINE)
+    return matches.group(2)
+
 def action(msg):
     chat_id = str(msg['chat']['id'])
     username = msg['chat']['first_name']
-    command = msg['text']
+    commandMessage = msg['text']
     message = "Nothing to say"
 
     #
@@ -45,21 +50,22 @@ def action(msg):
         # Check for Ssh <action> in the message
         # Only 2 actions are permitted : `Ssh run` and `Ssh stop`
         #
-        if 'Ssh' in command:
+        if 'Ssh' in commandMessage:
             # Check the action to perform
-            if 'run' in command:
+            if 'run' in commandMessage:
                 # Check if a custom port is given on the message chat
-                if 'port:' in command:
-                    global port
-                    regex = r"(port:)([^,]+)"
-                    matches = re.search(regex, command, re.MULTILINE)
-                    port = matches.group(2)
-                ssh_command = "./tunnelling.sh " + server + " " + user + " " + port + " " + timeout + " && ./localProxy.sh"
-                message = 'Start tunnelling on server ' + server
+                if 'port:' in commandMessage:
+                    port = getParameter("port", commandMessage)
+                    if 'server:' in commandMessage:
+                        server = getParameter("server", commandMessage)
 
-                # Run the tunneling script
-                subprocess.call(ssh_command, shell=True)
-            if 'stop' in command:
+            ssh_command = "./tunnelling.sh " + server + " " + user + " " + port + " " + timeout + " && ./localProxy.sh"
+            message = 'Start tunnelling on server ' + server
+
+            # Run the tunneling script
+            subprocess.call(ssh_command, shell=True)
+
+            if 'stop' in commandMessage:
                 ssh_command = "./stop_tunnelling.sh " + server
                 message = 'Stop tunnelling'
                 # Stop the tunnelling
