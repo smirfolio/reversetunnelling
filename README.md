@@ -53,7 +53,7 @@ A more effective solution is to lunch the tunnelling on demand, inspired by this
 In this Method, user can provide a specific port to use
 TODO: 
 - [x] User can provide a specific port   
-- [ ] User can provide a specific server    
+- [x] User can provide a specific server    
 - [ ] User can provide a specific user
 - [ ] any other useful options 
         
@@ -67,8 +67,10 @@ TODO:
 7. `sudo service tunnelling start`.
 8. Interact with the Bot from you Telegram messaging app by:
     - Start ssh tunnelling : `Ssh run`
-    - Start ssh tunnelling : `Ssh run port:200` (You can specify the ssh port to use)
+    - Start ssh tunnelling : `Ssh run port:200,` (You can specify the ssh port to use)
     - Stop ssh tunnelling : `Ssh stop`
+    - If not possible to use Dynamic DNS we can use [NgRok](http://ngrok.com), lunch the ./ngrok tcp [port] and use the generated [server]:[port] in the following command
+      `Ssh run port:[ngrokPort],server:[ngrokServer],` to stop the ssh tunnelling: `Ssh stop server:[ngrokServer]`
     - Any other message interaction will be responded by the Bot with a random quote
 
 ### Usage
