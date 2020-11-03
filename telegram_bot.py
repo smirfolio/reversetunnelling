@@ -66,10 +66,12 @@ def action(msg):
                 subprocess.call(ssh_command, shell=True)
 
             if 'stop' in commandMessage:
-                ssh_command = "./stop_tunnelling.sh " + server
-                message = 'Stop tunnelling'
-                # Stop the tunnelling
-                subprocess.call(ssh_command, shell=True)
+                if 'server:' in commandMessage:
+                    server = getParameter("server", commandMessage)
+                    ssh_command = "./stop_tunnelling.sh " + server
+                    message = 'Stop tunnelling'
+                    # Stop the tunnelling
+                    subprocess.call(ssh_command, shell=True)
 
         telegram_bot.sendMessage (chat_id, message)
 
